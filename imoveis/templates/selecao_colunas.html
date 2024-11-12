@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Seleção de Colunas</title>
+</head>
+<body>
+    <h1>Selecione as Colunas</h1>
+    <form action="/selecao_colunas" method="post">
+        <label for="cidade">Coluna para Cidade:</label>
+        <select name="cidade" id="cidade">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="bairro">Coluna para Bairro:</label>
+        <select name="bairro" id="bairro">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="tipo">Coluna para Tipo de Imóvel:</label>
+        <select name="tipo" id="tipo">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="metragem">Coluna para Metragem:</label>
+        <select name="metragem" id="metragem">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="quartos">Coluna para Número de Quartos:</label>
+        <select name="quartos" id="quartos">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="banheiros">Coluna para Banheiros:</label>
+        <select name="banheiros" id="banheiros">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="preco">Coluna para Preço:</label>
+        <select name="preco" id="preco">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="latitude">Coluna para Latitude:</label>
+        <select name="latitude" id="latitude">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="longitude">Coluna para Longitude:</label>
+        <select name="longitude" id="longitude">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Avançar para Configuração do Modelo</button>
+    </form>
+</body>
+</html>

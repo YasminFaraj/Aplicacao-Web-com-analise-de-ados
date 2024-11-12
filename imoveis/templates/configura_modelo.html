@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração do Modelo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Configuração do Modelo</h1>
+
+        <form method="POST">
+            <!-- Escolha do modelo -->
+            <div class="form-group">
+                <label for="modelo">Escolha o Modelo:</label>
+                <select class="form-control" id="modelo" name="modelo" required>
+                    <option value="">Selecione</option>
+                    <option value="RandomForest">Random Forest</option>
+                    <option value="KNN">K-Nearest Neighbors (KNN)</option>
+                </select>
+            </div>
+
+            <!-- Configurações do modelo Random Forest -->
+            <div id="random_forest_config" style="display: none;">
+                <div class="form-group">
+                    <label for="n_estimators">Número de Estimadores:</label>
+                    <input type="number" class="form-control" id="n_estimators" name="n_estimators" value="100" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="max_depth">Profundidade Máxima:</label>
+                    <input type="number" class="form-control" id="max_depth" name="max_depth" value="5" min="1">
+                </div>
+            </div>
+
+            <!-- Configurações do modelo KNN -->
+            <div id="knn_config" style="display: none;">
+                <div class="form-group">
+                    <label for="n_neighbors">Número de Vizinhos:</label>
+                    <input type="number" class="form-control" id="n_neighbors" name="n_neighbors" value="3" min="1">
+                </div>
+            </div>
+
+            <!-- Botão de Enviar -->
+            <button type="submit" class="btn btn-primary">Treinar Modelo</button>
+        </form>
+    </div>
+
+    <script>
+        // Mostrar/Esconder as configurações com base no modelo escolhido
+        document.getElementById('modelo').addEventListener('change', function() {
+            var modelo = this.value;
+
+            // Esconder todas as configurações de modelo
+            document.getElementById('random_forest_config').style.display = 'none';
+            document.getElementById('knn_config').style.display = 'none';
+
+            // Mostrar as configurações com base no modelo escolhido
+            if (modelo === 'RandomForest') {
+                document.getElementById('random_forest_config').style.display = 'block';
+            } else if (modelo === 'KNN') {
+                document.getElementById('knn_config').style.display = 'block';
+            }
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
