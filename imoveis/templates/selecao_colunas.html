@@ -9,6 +9,7 @@
     <form action="/selecao_colunas" method="post">
         <label for="cidade">Coluna para Cidade:</label>
         <select name="cidade" id="cidade">
+            <option value="">Nenhuma</option>
             {% for col in columns %}
             <option value="{{ col }}">{{ col }}</option>
             {% endfor %}
@@ -16,6 +17,7 @@
 
         <label for="bairro">Coluna para Bairro:</label>
         <select name="bairro" id="bairro">
+            <option value="">Nenhuma</option>
             {% for col in columns %}
             <option value="{{ col }}">{{ col }}</option>
             {% endfor %}
@@ -23,6 +25,7 @@
 
         <label for="tipo">Coluna para Tipo de Imóvel:</label>
         <select name="tipo" id="tipo">
+            <option value="">Nenhuma</option>
             {% for col in columns %}
             <option value="{{ col }}">{{ col }}</option>
             {% endfor %}
@@ -30,6 +33,7 @@
 
         <label for="metragem">Coluna para Metragem:</label>
         <select name="metragem" id="metragem">
+            <option value="">Nenhuma</option>
             {% for col in columns %}
             <option value="{{ col }}">{{ col }}</option>
             {% endfor %}
@@ -37,6 +41,7 @@
 
         <label for="quartos">Coluna para Número de Quartos:</label>
         <select name="quartos" id="quartos">
+            <option value="">Nenhuma</option>
             {% for col in columns %}
             <option value="{{ col }}">{{ col }}</option>
             {% endfor %}
@@ -44,6 +49,7 @@
 
         <label for="banheiros">Coluna para Banheiros:</label>
         <select name="banheiros" id="banheiros">
+            <option value="">Nenhuma</option>
             {% for col in columns %}
             <option value="{{ col }}">{{ col }}</option>
             {% endfor %}
@@ -51,6 +57,7 @@
 
         <label for="preco">Coluna para Preço:</label>
         <select name="preco" id="preco">
+            <option value="">Nenhuma</option>
             {% for col in columns %}
             <option value="{{ col }}">{{ col }}</option>
             {% endfor %}
@@ -58,6 +65,7 @@
 
         <label for="latitude">Coluna para Latitude:</label>
         <select name="latitude" id="latitude">
+            <option value="">Nenhuma</option>
             {% for col in columns %}
             <option value="{{ col }}">{{ col }}</option>
             {% endfor %}
@@ -65,6 +73,7 @@
 
         <label for="longitude">Coluna para Longitude:</label>
         <select name="longitude" id="longitude">
+            <option value="">Nenhuma</option>
             {% for col in columns %}
             <option value="{{ col }}">{{ col }}</option>
             {% endfor %}
