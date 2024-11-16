@@ -1,85 +1,144 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8">
-    <title>Seleção de Colunas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Seleção de colunas</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/selecao_colunas.css') }}">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Selecione as Colunas</h1>
-    <form action="/selecao_colunas" method="post">
-        <label for="cidade">Coluna para Cidade:</label>
-        <select name="cidade" id="cidade">
-            <option value="">Nenhuma</option>
-            {% for col in columns %}
-            <option value="{{ col }}">{{ col }}</option>
-            {% endfor %}
-        </select><br><br>
 
-        <label for="bairro">Coluna para Bairro:</label>
-        <select name="bairro" id="bairro">
-            <option value="">Nenhuma</option>
-            {% for col in columns %}
-            <option value="{{ col }}">{{ col }}</option>
-            {% endfor %}
-        </select><br><br>
+    <div id="background">
+        <video loop autoplay muted>
+            <source src="../static/assets/background-video.mp4" type="video/mp4">
+        </video>
+    </div>
 
-        <label for="tipo">Coluna para Tipo de Imóvel:</label>
-        <select name="tipo" id="tipo">
-            <option value="">Nenhuma</option>
-            {% for col in columns %}
-            <option value="{{ col }}">{{ col }}</option>
-            {% endfor %}
-        </select><br><br>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
-        <label for="metragem">Coluna para Metragem:</label>
-        <select name="metragem" id="metragem">
-            <option value="">Nenhuma</option>
-            {% for col in columns %}
-            <option value="{{ col }}">{{ col }}</option>
-            {% endfor %}
-        </select><br><br>
+    <div id="app">
+        <main>
 
-        <label for="quartos">Coluna para Número de Quartos:</label>
-        <select name="quartos" id="quartos">
-            <option value="">Nenhuma</option>
-            {% for col in columns %}
-            <option value="{{ col }}">{{ col }}</option>
-            {% endfor %}
-        </select><br><br>
+            <div class="main__info-left">
+                <h1>Seleção de colunas</h1>
+                <p>
+                    Esta página permite que você selecione as colunas do seu dataset, uma vez que nem todos os datasets possuem as mesmas 
+                    colunas ou nomes. Por exemplo, você poderá identificar e selecionar a coluna referente à cidade, associando-a corretamente 
+                    ao seu dataset.
+                </p>
+            </div>
 
-        <label for="banheiros">Coluna para Banheiros:</label>
-        <select name="banheiros" id="banheiros">
-            <option value="">Nenhuma</option>
-            {% for col in columns %}
-            <option value="{{ col }}">{{ col }}</option>
-            {% endfor %}
-        </select><br><br>
+            <div class="main__info-right">
+                <form action="/selecao_colunas" method="post">
+                    <label for="cidade">Coluna para cidade:</label>
+                    <select name="cidade" id="cidade">
+                        <option value="">Nenhuma</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select><br><br>
 
-        <label for="preco">Coluna para Preço:</label>
-        <select name="preco" id="preco">
-            <option value="">Nenhuma</option>
-            {% for col in columns %}
-            <option value="{{ col }}">{{ col }}</option>
-            {% endfor %}
-        </select><br><br>
+                    <label for="bairro">Coluna para bairro:</label>
+                    <select name="bairro" id="bairro">
+                        <option value="">Nenhuma</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select><br><br>
 
-        <label for="latitude">Coluna para Latitude:</label>
-        <select name="latitude" id="latitude">
-            <option value="">Nenhuma</option>
-            {% for col in columns %}
-            <option value="{{ col }}">{{ col }}</option>
-            {% endfor %}
-        </select><br><br>
+                    <label for="tipo">Coluna para tipo de imóvel:</label>
+                    <select name="tipo" id="tipo">
+                        <option value="">Nenhuma</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select><br><br>
 
-        <label for="longitude">Coluna para Longitude:</label>
-        <select name="longitude" id="longitude">
-            <option value="">Nenhuma</option>
-            {% for col in columns %}
-            <option value="{{ col }}">{{ col }}</option>
-            {% endfor %}
-        </select><br><br>
+                    <label for="metragem">Coluna para metragem:</label>
+                    <select name="metragem" id="metragem">
+                        <option value="">Nenhuma</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select><br><br>
 
-        <button type="submit">Avançar para Configuração do Modelo</button>
-    </form>
+                    <label for="quartos">Coluna para número de quartos:</label>
+                    <select name="quartos" id="quartos">
+                        <option value="">Nenhuma</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select><br><br>
+
+                    <label for="banheiros">Coluna para banheiros:</label>
+                    <select name="banheiros" id="banheiros">
+                        <option value="">Nenhuma</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select><br><br>
+
+                    <label for="preco">Coluna para preço:</label>
+                    <select name="preco" id="preco">
+                        <option value="">Nenhuma</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select><br><br>
+
+                    <label for="latitude">Coluna para latitude:</label>
+                    <select name="latitude" id="latitude">
+                        <option value="">Nenhuma</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select><br><br>
+
+                    <label for="longitude">Coluna para longitude:</label>
+                    <select name="longitude" id="longitude">
+                        <option value="">Nenhuma</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select><br><br>
+
+                    <button type="submit">Avançar para configuração do modelo</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // verifica se existe uma mensagem flash
+            const flashMessages = document.querySelector('.flash-messages');
+            
+            if (flashMessages) {
+                // espera 5 segundos e depois remove a notificação
+                setTimeout(function () {
+                    flashMessages.classList.add('hidden');
+                }, 5000);
+            }
+        });
+    </script>
+
 </body>
 </html>
