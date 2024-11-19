@@ -85,11 +85,15 @@ def selecao_colunas():
 
         # separa X e y do dataset
         X = data[colunas_validas]
-        if session.get('preco_col') is None:
+
+        # Cria um novo arquivo temporário com os dados filtrados
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as arq_filtrado:
+            X.to_csv(arq_filtrado.name, index=False)
+            session['arquivo_filtrado'] = arq_filtrado.name
+
+        if session.get('preco_col') not in colunas_validas:
             flash("Erro: A coluna de preço é obrigatória para treinar o modelo.", "error")
             return redirect('/selecao_colunas')
-        
-        y = data[session['preco_col']]
 
         # redireciona para a página de configuração do modelo
         return redirect(url_for('configura_modelo'))
@@ -101,11 +105,15 @@ def selecao_colunas():
 @app.route('/configura_modelo', methods=['GET', 'POST'])
 def configura_modelo():
     # carrega os dados temporários de novo
-    arq_temp_caminho = session.get('arquivo_temporario')
-    if arq_temp_caminho is None:
+    arq_filtrado_caminho = session.get('arquivo_filtrado')
+    if arq_filtrado_caminho is None:
         return redirect(url_for('index'))
 
-    data = pd.read_csv(arq_temp_caminho)
+    data = pd.read_csv(arq_filtrado_caminho)
+
+    # Recupera os nomes das colunas salvas na sessão
+    X = data.drop(columns=[session['preco_col']])
+    y = data[session['preco_col']]
 
     if request.method == 'POST':
         # configura o modelo com base nas escolhas do usuário
