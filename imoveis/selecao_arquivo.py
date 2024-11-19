@@ -3,6 +3,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import tempfile
 import os
@@ -77,10 +78,19 @@ def selecao_colunas():
         
         # filtra apenas colunas válidas (que não são None)
         colunas_validas = [coluna for coluna in colunas_selecionadas.values() if coluna is not None]
-        
+
+        # Valida se há pelo menos 4 colunas, além do preço
+        if 0 < len(colunas_validas) <= 4 and session.get('preco_col') in colunas_validas:
+            flash("Erro: Selecione pelo menos 5 colunas além da coluna de preço.", "error")
+            return redirect(url_for('selecao_colunas'))
+
         # garante que pelo menos uma coluna foi selecionada
         if not colunas_validas:
             flash("Erro: Nenhuma coluna válida foi selecionada.", "error")
+            return redirect('/selecao_colunas')
+
+        if session.get('preco_col') not in colunas_validas:
+            flash("Erro: A coluna de preço é obrigatória para treinar o modelo.", "error")
             return redirect('/selecao_colunas')
 
         # separa X e y do dataset
@@ -90,10 +100,6 @@ def selecao_colunas():
         with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as arq_filtrado:
             X.to_csv(arq_filtrado.name, index=False)
             session['arquivo_filtrado'] = arq_filtrado.name
-
-        if session.get('preco_col') not in colunas_validas:
-            flash("Erro: A coluna de preço é obrigatória para treinar o modelo.", "error")
-            return redirect('/selecao_colunas')
 
         # redireciona para a página de configuração do modelo
         return redirect(url_for('configura_modelo'))
@@ -114,6 +120,19 @@ def configura_modelo():
     # Recupera os nomes das colunas salvas na sessão
     X = data.drop(columns=[session['preco_col']])
     y = data[session['preco_col']]
+
+    # Remove colunas com valores nulos em X (colunas que não sejam o preço e que não foram selecionadas)
+    X = X.dropna(axis=1, how='any')
+
+    # Converte strings em colunas categóricas para valores numéricos
+    for col in X.columns:
+        if X[col].dtype == 'object':
+            encoder = LabelEncoder()
+            X[col] = encoder.fit_transform(X[col])
+
+    # Remove linhas onde y (preço) está nulo
+    X = X[y.notnull()]
+    y = y.dropna()
 
     if request.method == 'POST':
         # configura o modelo com base nas escolhas do usuário
