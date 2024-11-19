@@ -12,6 +12,27 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # limita a 16MB o tamamho do arquivo
 app.secret_key = "your_secret_key"  # necessário para usar sessões
 
+
+# Função para limpar as colunas com valores nulos
+def limpar_colunas_nulas(data, preco_col):
+    # Remove colunas com valores nulos em X (colunas que não sejam o preço e que não foram selecionadas)
+    X = data.drop(columns=[preco_col])
+    X = X.dropna(axis=1, how='any')  # remove colunas com valores nulos
+
+    # Converte strings em colunas categóricas para valores numéricos
+    for col in X.columns:
+        if X[col].dtype == 'object':
+            encoder = LabelEncoder()
+            X[col] = encoder.fit_transform(X[col])
+
+    # Remove linhas onde y (preço) está nulo
+    y = data[preco_col]
+    X = X[y.notnull()]
+    y = y.dropna()
+
+    return X, y
+
+
 # página inicial para upload do arquivo CSV
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -117,22 +138,8 @@ def configura_modelo():
 
     data = pd.read_csv(arq_filtrado_caminho)
 
-    # Recupera os nomes das colunas salvas na sessão
-    X = data.drop(columns=[session['preco_col']])
-    y = data[session['preco_col']]
-
-    # Remove colunas com valores nulos em X (colunas que não sejam o preço e que não foram selecionadas)
-    X = X.dropna(axis=1, how='any')
-
-    # Converte strings em colunas categóricas para valores numéricos
-    for col in X.columns:
-        if X[col].dtype == 'object':
-            encoder = LabelEncoder()
-            X[col] = encoder.fit_transform(X[col])
-
-    # Remove linhas onde y (preço) está nulo
-    X = X[y.notnull()]
-    y = y.dropna()
+    # Chama a função para limpar as colunas nula
+    X, y = limpar_colunas_nulas(data, session['preco_col'])
 
     if request.method == 'POST':
         # configura o modelo com base nas escolhas do usuário
