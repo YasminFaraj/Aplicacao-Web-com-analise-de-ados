@@ -1,12 +1,15 @@
 from flask import Flask, request, render_template, redirect, url_for, session, flash
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import r2_score
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import root_mean_squared_error
+from xgboost import XGBRegressor
 import pandas as pd
 import tempfile
-import os
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # limita a 16MB o tamamho do arquivo
@@ -31,6 +34,17 @@ def limpar_colunas_nulas(data, preco_col):
     y = y.dropna()
 
     return X, y
+
+
+# Função para buscar parâmetros otimizados
+def otimizar_parametros(modelo, X_train, y_train, parametros):
+    grid_search = GridSearchCV(estimator=modelo, param_grid=parametros, cv=5, n_jobs=-1)
+    grid_search.fit(X_train, y_train)
+
+    # Mostrar os melhores parâmetros encontrados
+    print(f"Melhores parâmetros encontrados: {grid_search.best_params_}")
+
+    return grid_search.best_estimator_
 
 
 # página inicial para upload do arquivo CSV
@@ -145,26 +159,89 @@ def configura_modelo():
         # configura o modelo com base nas escolhas do usuário
         modelo_escolhido = request.form.get("modelo")
         if modelo_escolhido == 'RandomForest':
-            n_estimators = int(request.form.get("n_estimators", 100))
-            max_depth = int(request.form.get("max_depth", 5))
-            model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=42)
+            n_estimators = int(request.form.get("n_estimators", 115))  # Pega o valor de n_estimators
+            max_depth = int(request.form.get("max_depth", 6))  # Pega o valor de max_depth
+            min_samples_split = int(request.form.get("min_samples_split", 2))
+            min_samples_leaf = int(request.form.get("min_samples_leaf", 1))
+            model = RandomForestRegressor(
+                n_estimators=n_estimators,
+                max_depth=max_depth,
+                min_samples_split=min_samples_split,
+                min_samples_leaf=min_samples_leaf,
+                random_state=42
+            )
+            """parametros = {
+                'n_estimators': [100, 115, 150, 200],
+                'max_depth': [None, 5, 6, 10, 20, 30],
+                'min_samples_split': [2, 5, 10],
+                'min_samples_leaf': [1, 2, 4]
+            }"""
         elif modelo_escolhido == 'KNN':
-            n_neighbors = int(request.form.get("n_neighbors", 3))
-            model = KNeighborsClassifier(n_neighbors=n_neighbors)
+            n_neighbors = int(request.form.get("n_neighbors", 5))
+            weights = request.form.get("weights", "uniform")
+            model = KNeighborsRegressor(
+                n_neighbors=n_neighbors,
+                weights=weights
+            )
+            """parametros = {
+                'n_neighbors': [3, 5, 7, 9],
+                'weights': ['uniform', 'distance']
+            }"""
+        elif modelo_escolhido == 'DecisionTree':
+            max_depth = int(request.form.get("max_depth_tree", 27))
+            min_samples_split = int(request.form.get("min_samples_split_tree", 4))
+            min_samples_leaf = int(request.form.get("min_samples_leaf_tree", 1))
+            model = DecisionTreeRegressor(
+                max_depth=max_depth,
+                min_samples_split=min_samples_split,
+                min_samples_leaf=min_samples_leaf,
+                random_state=42
+            )
+            """parametros = {
+                'max_depth': [None, 10, 20, 27],
+                'min_samples_split': [2, 4, 5],
+                'min_samples_leaf': [1, 2, 4]
+            }"""
+        elif modelo_escolhido == 'XGBoost':  # Adicionando suporte ao XGBoost
+            n_estimador = int(request.form.get("n_estimador", 115))
+            learning_rate = float(request.form.get("learning_rate", 0.1))
+            depth = int(request.form.get("depth", 5))
+            model = XGBRegressor(
+                n_estimators=n_estimador,
+                learning_rate=learning_rate,
+                max_depth=depth,
+                random_state=42
+            )
+            """parametros = {
+                'n_estimators': [50, 100, 115, 150, 200],
+                'learning_rate': [0.01, 0.1, 0.2],
+                'max_depth': [3, 5, 6, 10],
+            }"""
+
         else:
             return "Modelo não suportado"
 
         # divide os dados em treino e teste
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
+        # Buscar os melhores parâmetros com GridSearchCV
+        #best_model = otimizar_parametros(model, X_train, y_train, parametros)
+
         # treina o modelo
         model.fit(X_train, y_train)
+        # Treina o modelo com os melhores parâmetros (grid)
+        #best_model.fit(X_train, y_train)
 
         # faz predições e calcula a acurácia
         y_pred = model.predict(X_test)
-        acuracia = accuracy_score(y_test, y_pred)
+        # Faz predições e calcula a acurácia (grid)
+        #y_pred = best_model.predict(X_test)
 
-        return f"Modelo treinado com acurácia: {acuracia}"
+        # Calcula RMSE e R²
+        rmse = root_mean_squared_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
+
+        return f"Modelo treinado com RMSE: {rmse:.4f} e R²: {r2:.4f}"
 
     return render_template('configura_modelo.html')
 
