@@ -11,6 +11,13 @@ import pandas as pd
 import tempfile
 from config import app
 from models import *
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.graph_objects as go
+import io
+import base64
+import tempfile
+import plotly.express as px
 
 
 # função para limpar as colunas com valores nulos
@@ -209,9 +216,19 @@ def selecao_colunas():
         with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as arq_filtrado:
             X.to_csv(arq_filtrado.name, index=False)
             session['arquivo_filtrado'] = arq_filtrado.name
+        
+        # Verifica qual botão foi clicado
+        action = request.form.get('action')
+        if action == 'configuracao':
+            # Redireciona para a página de configuração do modelo
+            return redirect(url_for('configura_modelo'))
+        elif action == 'graficos':
+            # Redireciona para a página de gráficos
+            return redirect(url_for('graficos'))
 
-        # redireciona para a página de configuração do modelo
-        return redirect(url_for('configura_modelo'))
+        # Caso nenhuma ação válida seja identificada
+        flash("Erro: Ação inválida.", "error")
+        return redirect(url_for('selecao_colunas'))
 
     return render_template('selecao_colunas.html', columns=colunas)
 
@@ -222,7 +239,7 @@ def configura_modelo():
     # carrega os dados temporários de novo
     arq_filtrado_caminho = session.get('arquivo_filtrado')
     if arq_filtrado_caminho is None:
-        return redirect(url_for('index'))
+        return redirect(url_for('home'))
 
     data = pd.read_csv(arq_filtrado_caminho)
 
@@ -319,6 +336,102 @@ def configura_modelo():
 
     return render_template('configura_modelo.html')
 
+
+@app.route('/graficos', methods=['GET'])
+def graficos():
+    # carrega os dados temporários de novo
+    arq_filtrado_caminho = session.get('arquivo_filtrado')
+    if arq_filtrado_caminho is None:
+        return redirect(url_for('index'))
+
+    data = pd.read_csv(arq_filtrado_caminho)
+
+    # verifica se as colunas de latitude, logitude, preço, metragem foram selecionadas
+    latitude_col = session.get('latitude_col')
+    longitude_col = session.get('longitude_col')
+    if not latitude_col or not longitude_col or latitude_col not in data.columns or longitude_col not in data.columns:
+        flash("Erro: As colunas de latitude e longitude são necessárias para gerar o mapa.", "error")
+        return redirect(url_for('selecao_colunas'))
+    
+    preco_col = session.get('preco_col')
+    if not preco_col or preco_col not in data.columns:
+        flash("Erro: A coluna 'preço' não foi selecionada para gerar gráficos.", "error")
+        return redirect(url_for('selecao_colunas'))
+    
+    metragem_col = session.get('metragem_col')
+    if not metragem_col or metragem_col not in data.columns:
+        flash("Erro: A coluna 'metragem' não foi selecionada para gerar gráficos.", "error")
+        return redirect(url_for('selecao_colunas'))
+
+    # grafico de pizza - distribuicao por faixa de preco
+    faixas = ['Até 100 mil', '100 mil - 300 mil', '300 mil - 500 mil', '500 mil - 1 milhão', 'Mais de 1 milhão']
+    bins = [0, 100000, 300000, 500000, 1000000, float('inf')]
+    data['Faixa de Preço'] = pd.cut(data[preco_col], bins=bins, labels=faixas, include_lowest=True)
+    distribucao = data['Faixa de Preço'].value_counts()
+
+    plt.figure(figsize=(8, 6))
+    plt.pie(distribucao, labels=distribucao.index, autopct='%1.1f%%', startangle=140)
+    plt.title('Distribuição por Faixa de Preço')
+
+    # converte o gráfico para base64
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    imagem_base64_pizza = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    buffer.close()
+
+    # gráfico interativo de barra (plotly) - distribuicao por faixa de preco
+    fig_bar = go.Figure()
+    fig_bar.add_trace(go.Bar(
+        x=distribucao.index,
+        y=distribucao.values,
+        marker_color='skyblue'
+    ))
+    fig_bar.update_layout(
+        title='Distribuição por Faixa de Preço',
+        xaxis_title='Faixa de Preço',
+        yaxis_title='Quantidade',
+        template='plotly_dark'
+    )
+    fig_bar_html = fig_bar.to_html(full_html=False)
+
+    # configura o token (substitua pela sua chave do Mapbox)
+    mapbox_token = "SEU_MAPBOX_TOKEN_AQUI"
+    px.set_mapbox_access_token(mapbox_token)
+
+    # adicionar informacoes para os marcadores
+    data['tooltip'] = data.apply(
+        lambda row: f"Tipo: {row.get(session.get('tipo_col'), 'N/A')}<br>"
+                    f"Cidade: {row.get(session.get('cidade_col'), 'N/A')}<br>"
+                    f"Bairro: {row.get(session.get('bairro_col'), 'N/A')}<br>"
+                    f"Preço: R${row.get(session.get('preco_col'), 'N/A'):.2f}",
+        axis=1
+    )
+
+    # cria o grafico de mapa
+    fig_map = px.scatter_mapbox(
+        data,
+        lat=latitude_col,
+        lon=longitude_col,
+        color=session.get('preco_col'),  # cor com base no preço
+        size=session.get('metragem_col'),  # tamanho com base na metragem
+        text='tooltip',  # informações para o hover
+        hover_name='tooltip',  # detalhes para quando passar o mouse por cima
+        title="Mapa Interativo de Imóveis",
+        color_continuous_scale="Viridis",
+        size_max=15,
+        zoom=10,  # ajuste o nível de zoom (inicial)
+        range_color=[0, 3_000_000]
+    )
+
+    fig_map.update_layout(mapbox_style="open-street-map")
+    
+    fig_map_html = fig_map.to_html(full_html=False)
+
+    return render_template('graficos.html', 
+                           imagem_base64_pizza=imagem_base64_pizza, 
+                           fig_bar_html=fig_bar_html,
+                           fig_map_html=fig_map_html)
 
 if __name__ == '__main__':
     app.run(debug=True)

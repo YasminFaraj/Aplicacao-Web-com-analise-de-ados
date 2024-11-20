@@ -122,8 +122,11 @@
                         <option value="{{ col }}">{{ col }}</option>
                         {% endfor %}
                     </select><br><br>
-
-                    <button type="submit">Avançar para configuração do modelo</button>
+                
+                    <div class="buttons">
+                        <button type="submit" name="action" value="configuracao">Avançar para configuração do modelo</button>
+                        <button type="submit" name="action" value="graficos">Gerar Gráficos</button>
+                    </div>
                 </form>
             </div>
         </main>
