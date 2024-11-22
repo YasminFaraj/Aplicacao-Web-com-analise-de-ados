@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/graficos.css') }}">
+</head>
+<body>
+
+    <div id="background">
+        <video loop autoplay muted>
+            <source src="../static/assets/background-video.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <h1>Gráficos</h1>
+
+    <!-- gráfico de pizza -->
+    <h2>Distribuição por faixa de preço (pizza)</h2>
+    <div class="grafico-container">
+        <img src="data:image/png;base64,{{ imagem_base64_pizza }}" alt="Gráfico de Pizza">
+    </div>
+
+    <!-- gráfico interativo de barra -->
+    <h2>Distribuição por faixa de preço (barra)</h2>
+    <div class="grafico-container">
+        {{ fig_bar_html|safe }}
+    </div>
+
+    <!-- gráfico interativo de mapa -->
+    <h2>Mapa interativo de imóveis</h2>
+    <div class="grafico-container">
+        {{ fig_map_html|safe }}
+    </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resultado e previsão</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/resultado_previsao.css') }}">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <script>
+        // função para mostrar um pop-up com a mensagem
+        function showAlert(message) {
+            alert(message);
+        }
+    </script>
+</head>
+<body>
+
+    <div id="background">
+        <video loop autoplay muted>
+            <source src="../static/assets/background-video.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <script>
+                {% for category, message in messages %}
+                    // mostra um pop-up com a mensagem flash
+                    showAlert("{{ message }}");
+                {% endfor %}
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <div id="app">
+        <main>
+            <div class="main__info">
+                <h1>Sobre a previsão do valor do imóvel</h1>
+
+                <p>
+                    Nesta página, você pode prever o valor estimado de um imóvel com base nas características fornecidas, como localização, 
+                    metragem, número de quartos e banheiros, tipo de imóvel, entre outros. A previsão é feita utilizando um modelo de machine 
+                    learning que analisa os dados fornecidos e retorna o valor aproximado do imóvel. Certifique-se de preencher todos os campos 
+                    corretamente para obter um resultado preciso!<br><br>
+                </p>
+
+                <form method="POST">
+                    <div class="form-group">
+                        {% for coluna in colunas %}
+                            <label for="{{ coluna }}">{{ coluna.replace('_', ' ').capitalize() }}:</label>
+                            <input type="text" id="{{ coluna }}" name="{{ coluna }}" required><br><br>
+                        {% endfor %}
+                    <button type="submit">Prever</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+    </div>
+</body>
+</html>

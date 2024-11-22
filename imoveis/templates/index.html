@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <title>Imóveis</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+</head>
+<body>
+
+    <div id="background">
+        <video loop autoplay muted>
+            <source src="../static/assets/background-video.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="app">
+        <main>
+            <div class="main__info">
+                <h1>Bem-vindo ao nosso site de imóveis!</h1>
+                <div class="links">
+                    <br><a href="{{ url_for('register') }}" class="btn">Registrar</a>
+                    <br><a href="{{ url_for('login') }}" class="btn">Login</a>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+</body>
+</html>

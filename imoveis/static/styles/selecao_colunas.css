@@ -1,0 +1,136 @@
+/*global*/
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --text: #EDF1F7;
+    --red: #C51212;
+    --blue: #1846a3;
+    --green: #14B02D;
+    --yellow: #ffc12b;
+}
+  
+body, button, label, a {
+    color: var(--text);
+    font: 400 1rem "Mukta", sans-serif;
+}
+  
+a {
+    text-decoration: none;
+}
+  
+button:hover {
+    cursor: pointer;
+}
+
+#app {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 0 20px;
+}
+
+/*background*/
+#background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100vh;
+}
+
+#background video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(8px);
+}
+
+#background::after {
+    content: '';
+    width: inherit;
+    height: inherit;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(109deg, rgba(10, 12, 16, 0.99) 15%, rgba(10, 12, 16, 0.7) 50%, rgba(10, 12, 16, 0.99) 85%);
+}
+
+/*main*/
+main {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1040px;
+    padding: 100px 10px;
+    text-align: justify;
+}
+
+/*main left*/
+.main__info-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;  
+    width: 40%;
+}
+
+.main__info-left h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.main__info-left p {
+    font-size: 16px;
+}
+
+/*main right*/
+/*formulario*/
+.main__info-right {
+    width: 55%;  
+    background: rgba(0, 0, 0, 0.4);
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.main__info-right form label {
+    font-size: 16px;
+    font-weight: 600; 
+    margin-right: 15px; 
+    color: var(--white);
+}
+
+.main__info-right select {
+    font-size: 12px;
+    padding: 2px;
+}
+
+.main__info-right form label, 
+.main__info-right form select, 
+.main__info-right form button {
+    margin-bottom: 10px;
+}
+
+.main__info-right form button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--blue);
+    color: white;
+    border: 1px solid var(--blue);
+    border-radius: 5px; 
+    font-size: 14px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease;
+}
+
+.main__info-right form button:hover {
+    background: transparent;
+    border: 1px solid var(--blue);
+}

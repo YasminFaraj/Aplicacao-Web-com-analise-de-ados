@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Configuração do modelo</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/configura_modelo.css') }}">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+</head>
+<body>
+
+    <div id="background">
+        <video loop autoplay muted>
+            <source src="../static/assets/background-video.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="app">
+        <main>
+            <div class="main__info">
+                <h1>Configuração do modelo</h1>
+                <p>
+                    Este é um ambiente interativo projetado para facilitar a configuração e o treinamento de modelos de aprendizado de máquina. 
+                    Nele, você pode escolher entre diferentes algoritmos, como Random Forest, K-Nearest Neighbors (KNN), Decision Tree ou XGBoost.<br><br>
+
+                    Cada modelo apresenta configurações específicas que podem ser ajustadas de acordo com suas necessidades, como o número de 
+                    estimadores, a profundidade máxima, a taxa de aprendizado e outras características importantes para melhorar o desempenho 
+                    do modelo.<br><br>
+
+                    Depois de selecionar o modelo e ajustar os parâmetros, basta clicar no botão "Treinar modelo" para iniciar o treinamento. 
+                    Essa funcionalidade permite realizar experimentos e análises rapidamente, ajudando você a explorar o aprendizado de máquina 
+                    de maneira prática e eficiente.<br><br>
+
+                    Explore os recursos disponíveis e descubra insights valiosos com as diferentes configurações de modelos oferecidas nesta 
+                    página!<br><br>
+                </p>
+            
+                <form method="POST">
+                    <!-- escolha do modelo -->
+                    <div class="form-group">
+                        <label for="modelo">Escolha o modelo:</label>
+                        <select class="form-control" id="modelo" name="modelo" required>
+                            <option value="">Selecione</option>
+                            <option value="RandomForest">Random Forest</option>
+                            <option value="KNN">K-Nearest Neighbors (KNN)</option>
+                            <option value="DecisionTree">Decision Tree</option>
+                            <option value="XGBoost">XGBoost</option>
+                        </select>
+                    </div>
+
+                    <!-- configurações do modelo Random Forest -->
+                    <div id="random_forest_config" style="display: none;">
+                        <div class="form-group">
+                            <label for="n_estimators">Número de estimadores:</label>
+                            <input type="number" class="form-control" id="n_estimators" name="n_estimators" value="115" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="max_depth">Profundidade máxima:</label>
+                            <input type="number" class="form-control" id="max_depth" name="max_depth" value="6" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="min_samples_split">Mínimo de amostras para split:</label>
+                            <input type="number" name="min_samples_split" id="min_samples_split" min="2" max="10" value="2">
+                        </div>
+                        <div class="form-group">
+                            <label for="min_samples_leaf">Mínimo de amostras para folha:</label>
+                            <input type="number" name="min_samples_leaf" id="min_samples_leaf" min="1" max="4" value="1">
+                        </div>
+                    </div>
+
+                    <!-- configurações do modelo KNN -->
+                    <div id="knn_config" style="display: none;">
+                        <div class="form-group">
+                            <label for="n_neighbors">Número de vizinhos:</label>
+                            <input type="number" class="form-control" id="n_neighbors" name="n_neighbors" value="5" min="1"><br>
+                            
+                            <label for="weights">Pesos:</label>
+                            <select name="weights" id="weights">
+                                <option value="uniform">Uniforme</option>
+                                <option value="distance">Distância</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- parâmetros para Decision Tree -->
+                    <div id="decision_tree_config" style="display: none;">
+                        <label for="max_depth_tree">Profundidade máxima:</label>
+                        <input type="number" name="max_depth_tree" id="max_depth_tree" min="5" max="30" value="27"><br>
+                        
+                        <label for="min_samples_split_tree">Mínimo de amostras para split:</label>
+                        <input type="number" name="min_samples_split_tree" id="min_samples_split_tree" min="2" max="10" value="4"><br>
+
+                        <label for="min_samples_leaf_tree">Mínimo de amostras para folha:</label>
+                        <input type="number" name="min_samples_leaf_tree" id="min_samples_leaf_tree" min="1" max="4" value="1">
+                    </div>
+
+                    <div class="form-group" id="xgboost_config" style="display: none;">
+                        <div>
+                            <label for="n_estimador">Número de estimadores:</label>
+                            <input type="number" name="n_estimador" id="n_estimador" value="100">
+                        </div>
+                        <div>
+                            <label for="learning_rate">Taxa de aprendizado:</label>
+                            <input type="number" step="0.01" id="learning_rate" name="learning_rate" value="0.1">
+                        </div>
+                        <div>
+                            <label for="depth">Profundidade máxima:</label>
+                            <input type="number" id="depth" name="depth" value="6">
+                        </div>
+                    </div>
+
+                    <!-- botão de Enviar -->
+                    <button type="submit">Treinar modelo</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // mostrar/esconder as configurações com base no modelo escolhido
+        document.getElementById('modelo').addEventListener('change', function() {
+            var modelo = this.value;
+
+            // esconder todas as configurações de modelo
+            document.getElementById('random_forest_config').style.display = 'none';
+            document.getElementById('knn_config').style.display = 'none';
+            document.getElementById('decision_tree_config').style.display = 'none'
+            document.getElementById('xgboost_config').style.display = 'none';
+
+            // mostrar as configurações com base no modelo escolhido
+            if (modelo === 'RandomForest') {
+                document.getElementById('random_forest_config').style.display = 'block';
+            } else if (modelo === 'KNN') {
+                document.getElementById('knn_config').style.display = 'block';
+            } else if (modelo === 'DecisionTree'){
+                document.getElementById('decision_tree_config').style.display = 'block'
+            }
+            else if(modelo === 'XGBoost'){
+                document.getElementById('xgboost_config').style.display = 'block'
+            }
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

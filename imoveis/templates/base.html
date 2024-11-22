@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <title>
+        {% block titulo %}
+            titulo padrao
+        {% endblock %}
+    </title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+<body>
+    {% block body %}
+        body padrao
+    {% endblock %}
+</body>
+</html>
