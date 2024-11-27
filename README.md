@@ -4,9 +4,10 @@ Aplicação web utilizando Python, onde o usuário pode fazer o upload de arquiv
 Para rodar a aplicação, é necessário ativar o ambiente virutal e depois instalar as bibliotecas no terminal. Já no terminal, digite:
 
 1. Para ativar o ambiente virtual:
+
    ./venv/Scripts/Activate
 
-2. Para instalar as bibliotecas:
+3. Para instalar as bibliotecas:
 
    pip install flask flask-login flask_wtf flask_sqlalchemy scikit-learn xgboost pandas matplotlib plotly joblib
 
