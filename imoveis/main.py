@@ -8,11 +8,9 @@ from sklearn.metrics import r2_score, root_mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
 import pandas as pd
-import tempfile
 from config import app
 from models import *
 import matplotlib.pyplot as plt
-import seaborn as sns
 import plotly.graph_objects as go
 import io
 import base64
