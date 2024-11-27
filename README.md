@@ -3,7 +3,9 @@ Aplicação web utilizando Python, onde o usuário pode fazer o upload de arquiv
 
 Para rodar a aplicação, é necessário ativar o ambiente virutal e depois instalar as bibliotecas no terminal. Já no terminal, digite:
 
-Para ativar o ambiente virtual:./venv/Scripts/Activate
+Para ativar o ambiente virtual:
+
+./venv/Scripts/Activate
 
 Para instalar as bibliotecas:
 
