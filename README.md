@@ -5,8 +5,6 @@ Para rodar a aplicação, é necessário ativar o ambiente virutal e depois inst
 
 Para ativar o ambiente virtual:./venv/Scripts/Activate
 
-./venv/Scripts/Activate
-
 Para instalar as bibliotecas:
 
 pip install flask flask-login flask_wtf flask_sqlalchemy scikit-learn xgboost pandas matplotlib plotly joblib
