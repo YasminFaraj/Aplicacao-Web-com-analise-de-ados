@@ -18,7 +18,6 @@ import tempfile
 import plotly.express as px
 import joblib
 
-
 # função para limpar as colunas com valores nulos
 def limpar_colunas_nulas(data, preco_col):
     # remove colunas com valores nulos em X (colunas que não sejam o preço e que não foram selecionadas)
@@ -458,24 +457,28 @@ def resultado_previsao():
 @app.route('/graficos', methods=['GET'])
 def graficos():
     # carrega os dados temporários de novo
+    # verifica se ha um caminho de arquivo armazenado na sessao, se nao tiver, ele se redireciona para a pagina inicial
     arq_filtrado_caminho = session.get('arquivo_filtrado')
     if arq_filtrado_caminho is None:
         return redirect(url_for('index'))
-
+    
+    # le o arquivo csv
     data = pd.read_csv(arq_filtrado_caminho)
 
-    # verifica se as colunas de latitude, logitude, preço, metragem foram selecionadas
+    # verifica se as colunas de latitude e logitude foram selecionadas
     latitude_col = session.get('latitude_col')
     longitude_col = session.get('longitude_col')
     if not latitude_col or not longitude_col or latitude_col not in data.columns or longitude_col not in data.columns:
         flash("Erro: As colunas de latitude e longitude são necessárias para gerar o mapa.", "error")
         return redirect(url_for('selecao_colunas'))
     
+    # verifica se a coluna de preço foi selecionada
     preco_col = session.get('preco_col')
     if not preco_col or preco_col not in data.columns:
         flash("Erro: A coluna 'preço' não foi selecionada para gerar gráficos.", "error")
         return redirect(url_for('selecao_colunas'))
     
+    # verifica se a coluna de metragem foi selecionada
     metragem_col = session.get('metragem_col')
     if not metragem_col or metragem_col not in data.columns:
         flash("Erro: A coluna 'metragem' não foi selecionada para gerar gráficos.", "error")
@@ -517,7 +520,7 @@ def graficos():
     mapbox_token = "SEU_MAPBOX_TOKEN_AQUI"
     px.set_mapbox_access_token(mapbox_token)
 
-    # adicionar informacoes para os marcadores
+    # adicionar informacoes para os marcadores e cria uma nova coluna no DataFrame
     data['tooltip'] = data.apply(
         lambda row: f"Tipo: {row.get(session.get('tipo_col'), 'N/A')}<br>"
                     f"Cidade: {row.get(session.get('cidade_col'), 'N/A')}<br>"
@@ -542,10 +545,13 @@ def graficos():
         range_color=[0, 3_000_000]
     )
 
+    # estilo do mapa
     fig_map.update_layout(mapbox_style="open-street-map")
     
+    # transforma o mapa de objeto para html
     fig_map_html = fig_map.to_html(full_html=False)
 
+    # renderiza os mapas para serem exibidos na pagina web
     return render_template('graficos.html', 
                            imagem_base64_pizza=imagem_base64_pizza, 
                            fig_bar_html=fig_bar_html,
